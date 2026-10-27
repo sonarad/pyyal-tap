@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PYYAL Tap</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080808;color:#f5c542;font-family:Arial,sans-serif;text-align:center;padding:25px 18px}
+h1{letter-spacing:3px;margin:20px 0 5px}
+p{color:#ddd}
+.card{max-width:420px;margin:25px auto;padding:22px;border:1px solid #80621a;border-radius:22px;background:#151515}
+#balance{font-size:38px;font-weight:bold;margin:15px}
+.coin{width:190px;height:190px;border-radius:50%;border:8px solid #f5c542;background:radial-gradient(circle,#ffe99a,#d79b16 65%,#704500);color:#171000;font-size:48px;font-weight:bold;box-shadow:0 0 30px #9d771d;cursor:pointer;touch-action:manipulation}
+button{cursor:pointer}
+.action{display:block;width:100%;padding:14px;margin-top:12px;border:1px solid #f5c542;border-radius:12px;background:#242016;color:#ffda68;font-size:16px}
+small{color:#aaa}
+</style>
+</head>
+<body>
+<h1>PYYAL TAP</h1>
+<p>Tap the coin. Build your balance.</p>
+<div class="card">
+<small>YOUR BALANCE</small>
+<div id="balance">0 PYYAL</div>
+<button class="coin" id="coin">P</button>
+<p>Power: <span id="power">1</span></p>
+<p>Total taps: <span id="taps">0</span></p>
+<button class="action" id="upgrade">Upgrade power — <span id="cost">50</span> PYYAL</button>
+<button class="action" id="daily">🎁 Daily reward: 100 PYYAL</button>
+<button class="action" id="invite">👥 Invite friends</button>
+<button class="action" id="wallet">🔗 Connect TON Wallet</button>
+<p><small>Demo version. Coins are in-game points, not withdrawable cryptocurrency.</small></p>
+</div>
+<script>
+let balance=Number(localStorage.getItem('pyyalBalance')||0);
+let power=Number(localStorage.getItem('pyyalPower')||1);
+let taps=Number(localStorage.getItem('pyyalTaps')||0);
+function save(){
+localStorage.setItem('pyyalBalance',balance);
+localStorage.setItem('pyyalPower',power);
+localStorage.setItem('pyyalTaps',taps);
+document.getElementById('balance').textContent=balance+' PYYAL';
+document.getElementById('power').textContent=power;
+document.getElementById('taps').textContent=taps;
+document.getElementById('cost').textContent=power*50;
+}
+document.getElementById('coin').onclick=()=>{
+balance+=power;taps++;save();
+};
+document.getElementById('upgrade').onclick=()=>{
+let cost=power*50;
+if(balance<cost){alert('Not enough PYYAL points yet!');return}
+balance-=cost;power++;save();
+};
+document.getElementById('daily').onclick=()=>{
+let last=Number(localStorage.getItem('pyyalDaily')||0);
+if(Date.now()-last<86400000){alert('Daily reward already claimed. Come back tomorrow!');return}
+balance+=100;localStorage.setItem('pyyalDaily',Date.now());save();
+alert('100 PYYAL points added!');
+};
+document.getElementById('invite').onclick=()=>{
+let url=location.href;
+if(navigator.share){navigator.share({title:'PYYAL Tap',text:'Come play PYYAL Tap!',url})}
+else{prompt('Copy and share this game link:',url)}
+};
+document.getElementById('wallet').onclick=()=>{
+alert('TON wallet connection will be added in a later version.');
+};
+if(window.Telegram&&window.Telegram.WebApp){window.Telegram.WebApp.ready();window.Telegram.WebApp.expand()}
+save();
+</script>
+</body>
+</html>
